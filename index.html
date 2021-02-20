@@ -7,7 +7,7 @@
     <title>
 
     </title>
-    <script src="dist/tree.min.js"></script>
+    <script src="dist/tree.js"></script>
 </head>
 
 <body>
@@ -22,7 +22,7 @@
         data: [{ id: '-1', text: 'root', children: data }],
         closeDepth: 3,
         loaded: function () {
-            this.values = ['0-0-0', '0-1-1'];
+            this.values = ['0-0-0', '0-1-1', '1-0-0', '2-1', '2-2-2'];
             console.log(this.selectedNodes)
             console.log(this.values)
             this.disables = ['0-0-0', '0-0-1', '0-0-2']
