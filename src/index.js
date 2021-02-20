@@ -49,6 +49,7 @@ export default function Tree(container, options) {
    this.nodesById = {};
    this.leafNodesById = {};
    this.liElementsById = {};
+   this.checkboxElementsById = {};
    this.willUpdateNodesById = {};
    this.container = container;
    this.options = Object.assign(defaultOptions, options);
@@ -77,7 +78,7 @@ export default function Tree(container, options) {
             for (let id in nodesById) {
                if (
                   nodesById.hasOwnProperty(id) &&
-            (nodesById[id].status === 1 || nodesById[id].status === 2)
+                  (nodesById[id].status === 1 || nodesById[id].status === 2)
                ) {
                   const node = Object.assign({}, nodesById[id]);
                   delete node.parent;
@@ -155,7 +156,8 @@ Tree.prototype.load = function(callback) {
 Tree.prototype.render = function(treeNodes) {
    const treeEle = Tree.createRootEle();
    treeEle.appendChild(this.buildTree(treeNodes, 0));
-   this.bindEvent(treeEle);
+   this.bindClickOnTreeEvent(treeEle);
+   this.bindCheckBoxesEvents();
    const ele = document.querySelector(this.container);
    empty(ele);
    ele.appendChild(treeEle);
@@ -165,11 +167,13 @@ Tree.prototype.buildTree = function(nodes, depth) {
    const rootUlEle = Tree.createUlEle();
    if (nodes && nodes.length) {
       nodes.forEach(node => {
-         const liEle = Tree.createLiEle(
+         const [liEle, checkboxEl] = Tree.createLiEle(
             node,
             depth === this.options.closeDepth - 1
          );
          this.liElementsById[node.id] = liEle;
+         this.checkboxElementsById[node.id] = checkboxEl;
+
          let ulEle = null;
          if (node.children && node.children.length) {
             ulEle = this.buildTree(node.children, depth + 1);
@@ -181,31 +185,38 @@ Tree.prototype.buildTree = function(nodes, depth) {
    return rootUlEle;
 };
 
-Tree.prototype.bindEvent = function(ele) {
+Tree.prototype.bindClickOnTreeEvent = function(ele) {
    ele.addEventListener(
       'click',
       e => {
          const {target} = e;
          if (
-            target.nodeName === 'SPAN' &&
-        (target.classList.contains('treejs-checkbox') ||
-          target.classList.contains('treejs-label'))
-         ) {
-            this.onItemClick(target.parentNode.nodeId);
-         } else if (
             target.nodeName === 'LI' &&
-        target.classList.contains('treejs-node')
+            target.classList.contains('treejs-node')
          ) {
-            this.onItemClick(target.nodeId);
+            this.onItemClick(target.dataset.id);
          } else if (
             target.nodeName === 'SPAN' &&
-        target.classList.contains('treejs-switcher')
+            target.classList.contains('treejs-switcher')
          ) {
             this.onSwitcherClick(target);
          }
       },
       false
    );
+};
+
+Tree.prototype.bindCheckBoxesEvents = function() {
+   Object.values(this.checkboxElementsById).forEach(checkbox => {
+      checkbox.addEventListener(
+         'change',
+         e => {
+            const {target} = e;
+            this.onItemClick(target.dataset.id);
+         },
+         false
+      );
+   });
 };
 
 Tree.prototype.onItemClick = function(id) {
@@ -237,7 +248,7 @@ Tree.prototype.getValues = function() {
       if (this.leafNodesById.hasOwnProperty(id)) {
          if (
             this.leafNodesById[id].status === 1 ||
-        this.leafNodesById[id].status === 2
+            this.leafNodesById[id].status === 2
          ) {
             values.push(id);
          }
@@ -412,28 +423,40 @@ Tree.prototype.walkDown = function(node, changeState) {
 
 Tree.prototype.updateLiElement = function(node) {
    const {classList} = this.liElementsById[node.id];
+   const checkBoxEl = this.checkboxElementsById[node.id];
+
    switch (node.status) {
    case 0:
       classList.remove('treejs-node__halfchecked', 'treejs-node__checked');
+      checkBoxEl.indeterminate = false;
+      checkBoxEl.checked = false;
       break;
    case 1:
       classList.remove('treejs-node__checked');
+      checkBoxEl.checked = false;
       classList.add('treejs-node__halfchecked');
+      checkBoxEl.indeterminate = true;
       break;
    case 2:
       classList.remove('treejs-node__halfchecked');
+      checkBoxEl.indeterminate = false;
       classList.add('treejs-node__checked');
+      checkBoxEl.checked = true;
       break;
    }
 
    switch (node.disabled) {
    case true:
-      if (!classList.contains('treejs-node__disabled'))
+      if (!classList.contains('treejs-node__disabled')) {
          classList.add('treejs-node__disabled');
+         checkBoxEl.disabled = true;
+      }
       break;
    case false:
-      if (classList.contains('treejs-node__disabled'))
+      if (classList.contains('treejs-node__disabled')) {
          classList.remove('treejs-node__disabled');
+         checkBoxEl.disabled = false;
+      }
       break;
    }
 };
@@ -490,14 +513,19 @@ Tree.createLiEle = function(node, closed) {
    } else {
       li.classList.add('treejs-placeholder');
    }
-   const checkbox = document.createElement('span');
-   checkbox.classList.add('treejs-checkbox');
-   li.appendChild(checkbox);
-   const label = document.createElement('span');
+
+   const label = document.createElement('label');
    label.classList.add('treejs-label');
+   const checkbox = document.createElement('input');
+   checkbox.type = 'checkbox';
+   checkbox.dataset.id = node.id; // FIXME: < IE11
+   checkbox.classList.add('treejs-checkbox');
+   label.appendChild(checkbox);
    const text = document.createTextNode(node.text);
    label.appendChild(text);
+
    li.appendChild(label);
-   li.nodeId = node.id;
-   return li;
+   li.dataset.id = node.id;
+
+   return [li, checkbox];
 };
