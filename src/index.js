@@ -36,7 +36,6 @@ function animation(duration, callback) {
 
 export default function Tree(container, options) {
    const defaultOptions = {
-      selectMode: 'checkbox',
       values: [],
       disables: [],
       beforeLoad: null,
@@ -44,6 +43,7 @@ export default function Tree(container, options) {
       url: null,
       method: 'GET',
       closeDepth: null,
+      name: null
    };
    this.treeNodes = [];
    this.nodesById = {};
@@ -169,7 +169,8 @@ Tree.prototype.buildTree = function(nodes, depth) {
       nodes.forEach(node => {
          const [liEle, checkboxEl] = Tree.createLiEle(
             node,
-            depth === this.options.closeDepth - 1
+            depth === this.options.closeDepth - 1,
+            this.options.name
          );
          this.liElementsById[node.id] = liEle;
          this.checkboxElementsById[node.id] = checkboxEl;
@@ -502,7 +503,7 @@ Tree.createUlEle = function() {
    return ul;
 };
 
-Tree.createLiEle = function(node, closed) {
+Tree.createLiEle = function(node, closed, chkBoxName) {
    const li = document.createElement('li');
    li.classList.add('treejs-node');
    if (closed) li.classList.add('treejs-node__close');
@@ -519,6 +520,12 @@ Tree.createLiEle = function(node, closed) {
    const checkbox = document.createElement('input');
    checkbox.type = 'checkbox';
    checkbox.dataset.id = node.id; // FIXME: < IE11
+   if (!node.children) {
+      if (chkBoxName) {
+         checkbox.name = chkBoxName + '[]';
+      }
+      checkbox.value = node.id;
+   }
    checkbox.classList.add('treejs-checkbox');
    label.appendChild(checkbox);
    const text = document.createTextNode(node.text);
