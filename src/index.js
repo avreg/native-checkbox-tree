@@ -34,6 +34,16 @@ function animation(duration, callback) {
    });
 }
 
+function parseBoolean(s) {
+   if (s === true || s === 'true') {
+      return true;
+   } else if (s === false || s === 'false' || s === 'null') {
+      return false;
+   } else {
+      return !!s;
+   }
+}
+
 export default function Tree(container, options) {
    const defaultOptions = {
       values: [],
@@ -43,7 +53,7 @@ export default function Tree(container, options) {
       url: null,
       method: 'GET',
       closeDepth: null,
-      name: null
+      name: null,
    };
    this.treeNodes = [];
    this.nodesById = {};
@@ -133,6 +143,7 @@ Tree.prototype.init = function(data) {
    if (disables && disables.length) defaultDisables = disables;
    defaultDisables.length && this.setDisables(defaultDisables);
    loaded && loaded.call(this);
+   this.createObserver();
    console.timeEnd('init');
 };
 
@@ -154,13 +165,13 @@ Tree.prototype.load = function(callback) {
 };
 
 Tree.prototype.render = function(treeNodes) {
-   const treeEle = Tree.createRootEle();
-   treeEle.appendChild(this.buildTree(treeNodes, 0));
-   this.bindClickOnTreeEvent(treeEle);
+   this.treeEle = Tree.createRootEle();
+   this.treeEle.appendChild(this.buildTree(treeNodes, 0));
+   this.bindClickOnTreeEvent(this.treeEle);
    this.bindCheckBoxesEvents();
    const ele = document.querySelector(this.container);
    empty(ele);
-   ele.appendChild(treeEle);
+   ele.appendChild(this.treeEle);
 };
 
 Tree.prototype.buildTree = function(nodes, depth) {
@@ -430,7 +441,7 @@ Tree.prototype.updateLiElement = function(node) {
    case 0:
       classList.remove('treejs-node__halfchecked', 'treejs-node__checked');
       checkBoxEl.indeterminate = false;
-      checkBoxEl.checked = false;
+      checkBoxEl.checked = false; // IMPORTANT: use el.checked to prevent mutation event fire
       break;
    case 1:
       classList.remove('treejs-node__checked');
@@ -535,4 +546,47 @@ Tree.createLiEle = function(node, closed, chkBoxName) {
    li.dataset.id = node.id;
 
    return [li, checkbox];
+};
+
+// https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+Tree.prototype.createObserver = function() {
+   // Options for the observer (which mutations to observe)
+   const config = {
+      attributes: true,
+      childList: false,
+      subtree: true,
+      characterData: false,
+      attributeFilter: ['checked']
+   };
+
+   // Callback function to execute when mutations are observed
+   const callback = function(mutationsList /*, observer */) {
+      // Use traditional 'for loops' for IE 11
+      for (const mutation of mutationsList) {
+         if (mutation.type === 'attributes' &&
+            mutation.attributeName === 'checked' &&
+            mutation.target.tagName === 'INPUT' &&
+            mutation.target.type === 'checkbox'
+         ) {
+            const node = this.nodesById[mutation.target.dataset.id];
+            const nodeChecked = (node.status === 1 || node.status === 2);
+            const elementChecked = parseBoolean(mutation.target.getAttribute(mutation.attributeName));
+            // console.log(`status ${node.status}/${nodeChecked}, element ${mutation.target.getAttribute(mutation.attributeName)}/${elementChecked}`);
+            if (nodeChecked !== elementChecked) {
+               this.onItemClick(mutation.target.dataset.id);
+            }
+         }
+      }
+   };
+
+   // Create an observer instance linked to the callback function
+   this.observer = new MutationObserver(callback.bind(this));
+
+   // Start observing the target node for configured mutations
+   this.observer.observe(this.treeEle, config);
+};
+
+Tree.prototype.dispose = function() {
+   // Later, you can stop observing
+   this.observer && this.observer.disconnect();
 };
