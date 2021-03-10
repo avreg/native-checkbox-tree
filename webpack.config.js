@@ -4,7 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
    .BundleAnalyzerPlugin;
-const RenameWebpackPlugin = require('rename-webpack-plugin');
 
 module.exports = {
    mode: 'none',
@@ -80,10 +79,6 @@ module.exports = {
       new webpack.BannerPlugin(
          'treejs\n@version 1.8.0\n@see https://github.com/avreg/treejs'
       ),
-      new RenameWebpackPlugin({
-         originNameReg: 'tree.js',
-         targetName: 'tree.dev.js',
-      }),
       new BundleAnalyzerPlugin({analyzerMode: 'json'}),
    ],
 };
