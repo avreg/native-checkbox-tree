@@ -9,13 +9,13 @@ module.exports = {
    mode: 'none',
    devtool: 'source-map',
    entry: {
-      tree: './src/index.js',
-      'tree.min': './src/index.js',
+      'native-checkbox-tree': './src/index.js',
+      'native-checkbox-tree.min': './src/index.js',
    },
    output: {
       filename: '[name].js',
       libraryExport: 'default',
-      library: 'Tree',
+      library: 'NativeCheckBoxTree',
       libraryTarget: 'umd',
    },
    module: {
@@ -77,7 +77,7 @@ module.exports = {
          assetNameRegExp: /\.min\.css$/,
       }),
       new webpack.BannerPlugin(
-         'treejs\n@version 1.8.0\n@see https://github.com/avreg/treejs'
+         'native-checkbox-tree\n@version 1.8.0\n@see https://github.com/avreg/treejs'
       ),
       new BundleAnalyzerPlugin({analyzerMode: 'json'}),
    ],

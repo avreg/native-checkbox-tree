@@ -1,9 +1,9 @@
-# @widgetjs/tree
+# native-checkbox-tree
 
-[![NPM version](https://img.shields.io/npm/v/@widgetjs/tree.svg?style=flat-square)](https://npmjs.org/package/@widgetjs/tree)
+[![NPM version](https://img.shields.io/npm/v/native-checkbox-tree.svg?style=flat-square)](https://npmjs.org/package/native-checkbox-tree)
 [![David deps](https://img.shields.io/david/daweilv/treejs.svg?style=flat-square)](https://david-dm.org/daweilv/treejs)
-[![npm downloads](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
-[![gzip size](https://flat.badgen.net/bundlephobia/minzip/@widgetjs/tree)](https://bundlephobia.com/result?p=@widgetjs/tree)
+[![npm downloads](https://img.shields.io/npm/dm/native-checkbox-tree.svg?style=flat-square)](https://www.npmjs.com/package/native-checkbox-tree)
+[![gzip size](https://flat.badgen.net/bundlephobia/minzip/native-checkbox-tree)](https://bundlephobia.com/result?p=native-checkbox-tree)
 
 A lightweight flexible tree widget.
 
@@ -23,7 +23,7 @@ A lightweight flexible tree widget.
 ## Install
 
 ```bash
-npm i -S @widgetjs/tree
+npm i -S native-checkbox-tree
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ npm i -S @widgetjs/tree
 ### React/Vue usage
 
 ```js
-import Tree from '@widgetjs/tree';
+import Tree from 'native-checkbox-tree';
 ```
 
 ### VanillaJS usage
@@ -207,5 +207,5 @@ const disabledNodes = myTree.disabledNodes;
 
 ---
 
-Like @widgetjs/tree? just 🌟 star the project!
+Like native-checkbox-tree? just 🌟 star the project!
 [Create issues](https://github.com/daweilv/treejs/issues) if you find bug.

@@ -1,5 +1,5 @@
 {
-  "name": "@widgetjs/tree",
+  "name": "native-checkbox-tree",
   "version": "1.8.2",
   "description": "a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.",
   "main": "index.js",
@@ -52,13 +52,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/daweilv/treejs.git"
+    "url": "git+https://github.com/avreg/treejs.git"
   },
   "keywords": [
     "js",
     "tree",
-    "treejs",
-    "tree.js",
+    "checkbox-tree",
+    "checkbox-tree.js",
     "widget",
     "react-tree",
     "vue-tree"
@@ -66,7 +66,7 @@
   "author": "daweilv",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/daweilv/treejs/issues"
+    "url": "https://github.com/avreg/treejs/issues"
   },
-  "homepage": "https://github.com/daweilv/treejs#readme"
+  "homepage": "https://github.com/avreg/treejs#readme"
 }

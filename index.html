@@ -7,7 +7,12 @@
    <title>
 
    </title>
-   <script src="dist/tree.js"></script>
+   <style>
+      div {
+         margin-bottom: 0.3rem;
+      }
+   </style>
+   <script src="dist/native-checkbox-tree.js"></script>
 </head>
 
 <body>
@@ -17,6 +22,10 @@
       <span id="cur-checked-status" style="min-width: 40px; width: 40px; display:inline-block;"></span>
       <button id="set-on">On</button>
       <button id="set-off">Off</button>
+   </div>
+   <div>
+      <label for="all">Set/reset ALL:</label>
+      <input id="all" type="checkbox">
    </div>
    <div class="container">
    </div>
@@ -28,6 +37,7 @@
    const setOnBtn = document.getElementById('set-on');
    const setOffBtn = document.getElementById('set-off');
    const curStateSpan = document.getElementById('cur-checked-status');
+   const cbAll = document.getElementById('all');
 
    var treeEl;
    var checkBoxes;
@@ -50,7 +60,11 @@
       }, 300, targetEl);
    }
 
-   const tree = new Tree('.container', {
+   cbAll.onchange = function(e) {
+      console.log(this.checked, e);
+   }
+
+   const ctree = new NativeCheckBoxTree('.container', {
       data: [{ id: '-1', text: 'root', children: data }],
       closeDepth: 3,
       name: 'my-form-checkbox-inputs',
@@ -60,8 +74,8 @@
          console.log(this.values)
          this.disables = ['0-0-0', '0-0-1', '0-0-2'];
 
-         treeEl = document.getElementsByClassName('treejs');
-         checkBoxes = Array.from(treeEl[0].getElementsByClassName('treejs-checkbox'));
+         treeEl = document.getElementsByClassName('native-checkbox-tree');
+         checkBoxes = Array.from(treeEl[0].getElementsByClassName('native-checkbox-tree-checkbox'));
       },
       onChange: function () {
          console.log(this.values);

@@ -1,19 +1,19 @@
 /* eslint-disable */
-new Tree('#container', {
+new NativeCheckBoxTree('#container', {
     data: [], // tree data
 });
 
-new Tree('#container', {
+new NativeCheckBoxTree('#container', {
     data: [], // tree data
     values: ['1', '2', '3'],
 });
 
-new Tree('#container', {
+new NativeCheckBoxTree('#container', {
     url: '/api/treeJson',
     values: ['1', '2', '3'],
 });
 
-new Tree('#container', {
+new NativeCheckBoxTree('#container', {
     url: '/api/rawData',
     beforeLoad: rawdata => {
         let formatedData = rawdata; // do some format
@@ -22,19 +22,19 @@ new Tree('#container', {
     values: ['1', '2', '3'],
 });
 
-new Tree('#container', {
+new NativeCheckBoxTree('#container', {
     url: '/api/treeJson',
     loaded: () => {
-        // to something or setValues() after Tree loaded callback
+        // to something or setValues() after NativeCheckBoxTree loaded callback
         let treeJson = [];
         this.values = treeJson;
     },
 });
 
-new Tree('#container', {
+new NativeCheckBoxTree('#container', {
     url: '/api/treeWithCheckedStatusJson',
 });
 
-let tree = new Tree();
+let tree = new NativeCheckBoxTree();
 let values = tree.values;
 let selectedNodes = tree.selectedNodes;
