@@ -65,12 +65,34 @@ export default function NativeCheckBoxTree(container, options) {
    this.options = Object.assign(defaultOptions, options);
 
    Object.defineProperties(this, {
+      leafLength: {
+         get: function () {
+            return Object.keys(this.leafNodesById).length;
+         },
+      },
       values: {
          get() {
             return this.getValues();
          },
          set(values) {
-            return this.setValues(uniq(values));
+            const vtypestr = typeof values;
+            let normalizedValues = [];
+            if (values) {
+               if (Array.isArray(values)) {
+                  normalizedValues = uniq(values);
+               } else if (vtypestr === 'string') {
+                  if (values === '*') {
+                     normalizedValues = this.treeNodes.map(function(n) {
+                        return n.id;
+                     });
+                  } else {
+                     normalizedValues.push(values);
+                  }
+               } else {
+                  throw new TypeError('unexpected "values" value');
+               }
+            }
+            return this.setValues(normalizedValues);
          },
       },
       disables: {
@@ -439,7 +461,10 @@ NativeCheckBoxTree.prototype.updateLiElement = function(node) {
 
    switch (node.status) {
    case 0:
-      classList.remove('native-checkbox-tree-node__halfchecked', 'native-checkbox-tree-node__checked');
+      classList.remove(
+         'native-checkbox-tree-node__halfchecked',
+         'native-checkbox-tree-node__checked'
+      );
       checkBoxEl.indeterminate = false;
       checkBoxEl.checked = false; // IMPORTANT: use el.checked to prevent mutation event fire
       break;
@@ -556,21 +581,24 @@ NativeCheckBoxTree.prototype.createObserver = function() {
       childList: false,
       subtree: true,
       characterData: false,
-      attributeFilter: ['checked']
+      attributeFilter: ['checked'],
    };
 
    // Callback function to execute when mutations are observed
    const callback = function(mutationsList /*, observer */) {
       // Use traditional 'for loops' for IE 11
       for (const mutation of mutationsList) {
-         if (mutation.type === 'attributes' &&
+         if (
+            mutation.type === 'attributes' &&
             mutation.attributeName === 'checked' &&
             mutation.target.tagName === 'INPUT' &&
             mutation.target.type === 'checkbox'
          ) {
             const node = this.nodesById[mutation.target.dataset.id];
-            const nodeChecked = (node.status === 1 || node.status === 2);
-            const elementChecked = parseBoolean(mutation.target.getAttribute(mutation.attributeName));
+            const nodeChecked = node.status === 1 || node.status === 2;
+            const elementChecked = parseBoolean(
+               mutation.target.getAttribute(mutation.attributeName)
+            );
             // console.log(`status ${node.status}/${nodeChecked}, element ${mutation.target.getAttribute(mutation.attributeName)}/${elementChecked}`);
             if (nodeChecked !== elementChecked) {
                this.onItemClick(mutation.target.dataset.id);
