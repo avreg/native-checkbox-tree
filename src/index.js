@@ -66,8 +66,25 @@ export default function NativeCheckBoxTree(container, options) {
 
    Object.defineProperties(this, {
       leafLength: {
-         get: function () {
+         get: function() {
             return Object.keys(this.leafNodesById).length;
+         },
+      },
+      indeterminate: {
+         get: function() {
+            let leafs = this.leafNodesById;
+            let leaf_enabled_checked = 0, leaf_enabled_all = 0;
+
+            for (let id in leafs) {
+               let leaf = leafs[id];
+               if (!leaf.disabled) {
+                  leaf_enabled_all += 1;
+                  if (leaf.status > 0) {
+                     leaf_enabled_checked += 1;
+                  }
+               }
+            }
+            return !(leaf_enabled_checked === 0 || leaf_enabled_all === leaf_enabled_checked);
          },
       },
       values: {

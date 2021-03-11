@@ -42,28 +42,6 @@
    var treeEl;
    var checkBoxes;
 
-   setOnBtn.onclick = setOffBtn.onclick = function (e) {
-      const newCheckedStatus = e.target.id === 'set-on';
-      const targetEl = checkBoxes.find(function (c) {
-         return setIdInput.value === (c.dataset.id || c.value);
-      });
-      if (targetEl) {
-         if (newCheckedStatus) {
-            targetEl.setAttribute('checked', 'checked');
-         } else {
-            targetEl.setAttribute('checked', null);
-            targetEl.checked = false;
-         }
-      }
-      setTimeout(function(chkBoxEl) {
-         curStateSpan.innerText = chkBoxEl.checked ? 'On' : 'Off'
-      }, 300, targetEl);
-   }
-
-   cbAll.onchange = function(e) {
-      console.log(this.checked, e);
-   }
-
    const ctree = new NativeCheckBoxTree('.container', {
       data: [{ id: '-1', text: 'root', children: data }],
       closeDepth: 3,
@@ -79,8 +57,41 @@
       },
       onChange: function () {
          console.log(this.values);
+         const disabled = this.disables;
+         const enabledAndChecked = this.values.filter(function(n) {
+            return !!(disabled.indexOf(n) === -1);
+         });
+         cbAll.checked = enabledAndChecked.length > 0;
+         cbAll.indeterminate = this.indeterminate;
       }
-   })
+   });
+
+   setOnBtn.onclick = setOffBtn.onclick = function (e) {
+      const newCheckedStatus = e.target.id === 'set-on';
+      const targetEl = checkBoxes.find(function (c) {
+         return setIdInput.value === (c.dataset.id || c.value);
+      });
+      if (targetEl) {
+         if (newCheckedStatus) {
+            targetEl.setAttribute('checked', 'checked');
+         } else {
+            targetEl.setAttribute('checked', null);
+            targetEl.checked = false;
+         }
+      }
+      setTimeout(function (chkBoxEl) {
+         curStateSpan.innerText = chkBoxEl.checked ? 'On' : 'Off'
+      }, 300, targetEl);
+   }
+
+   cbAll.onchange = function (e) {
+      console.log(this.checked, e);
+      if (this.checked) {
+         ctree.values = '*'
+      } else {
+         ctree.values = false;
+      }
+   }
 </script>
 
 </html>
