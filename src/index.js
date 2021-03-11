@@ -243,12 +243,12 @@ NativeCheckBoxTree.prototype.bindClickOnTreeEvent = function(ele) {
          const {target} = e;
          if (
             target.nodeName === 'LI' &&
-            target.classList.contains('native-checkbox-tree-node')
+            target.classList.contains('NCT-node')
          ) {
             this.onItemClick(target.dataset.id);
          } else if (
             target.nodeName === 'SPAN' &&
-            target.classList.contains('native-checkbox-tree-switcher')
+            target.classList.contains('NCT-switcher')
          ) {
             this.onSwitcherClick(target);
          }
@@ -397,7 +397,7 @@ NativeCheckBoxTree.prototype.onSwitcherClick = function(target) {
    const liEle = target.parentNode;
    const ele = liEle.lastChild;
    const height = ele.scrollHeight;
-   if (liEle.classList.contains('native-checkbox-tree-node__close')) {
+   if (liEle.classList.contains('NCT-node__close')) {
       animation(150, {
          enter() {
             ele.style.height = 0;
@@ -410,7 +410,7 @@ NativeCheckBoxTree.prototype.onSwitcherClick = function(target) {
          leave() {
             ele.style.height = '';
             ele.style.opacity = '';
-            liEle.classList.remove('native-checkbox-tree-node__close');
+            liEle.classList.remove('NCT-node__close');
          },
       });
    } else {
@@ -426,7 +426,7 @@ NativeCheckBoxTree.prototype.onSwitcherClick = function(target) {
          leave() {
             ele.style.height = '';
             ele.style.opacity = '';
-            liEle.classList.add('native-checkbox-tree-node__close');
+            liEle.classList.add('NCT-node__close');
          },
       });
    }
@@ -479,36 +479,36 @@ NativeCheckBoxTree.prototype.updateLiElement = function(node) {
    switch (node.status) {
    case 0:
       classList.remove(
-         'native-checkbox-tree-node__halfchecked',
-         'native-checkbox-tree-node__checked'
+         'NCT-node__halfchecked',
+         'NCT-node__checked'
       );
       checkBoxEl.indeterminate = false;
       checkBoxEl.checked = false; // IMPORTANT: use el.checked to prevent mutation event fire
       break;
    case 1:
-      classList.remove('native-checkbox-tree-node__checked');
+      classList.remove('NCT-node__checked');
       checkBoxEl.checked = false;
-      classList.add('native-checkbox-tree-node__halfchecked');
+      classList.add('NCT-node__halfchecked');
       checkBoxEl.indeterminate = true;
       break;
    case 2:
-      classList.remove('native-checkbox-tree-node__halfchecked');
+      classList.remove('NCT-node__halfchecked');
       checkBoxEl.indeterminate = false;
-      classList.add('native-checkbox-tree-node__checked');
+      classList.add('NCT-node__checked');
       checkBoxEl.checked = true;
       break;
    }
 
    switch (node.disabled) {
    case true:
-      if (!classList.contains('native-checkbox-tree-node__disabled')) {
-         classList.add('native-checkbox-tree-node__disabled');
+      if (!classList.contains('NCT-node__disabled')) {
+         classList.add('NCT-node__disabled');
          checkBoxEl.disabled = true;
       }
       break;
    case false:
-      if (classList.contains('native-checkbox-tree-node__disabled')) {
-         classList.remove('native-checkbox-tree-node__disabled');
+      if (classList.contains('NCT-node__disabled')) {
+         classList.remove('NCT-node__disabled');
          checkBoxEl.disabled = false;
       }
       break;
@@ -546,30 +546,30 @@ NativeCheckBoxTree.parseTreeData = function(data) {
 
 NativeCheckBoxTree.createRootEle = function() {
    const div = document.createElement('div');
-   div.classList.add('native-checkbox-tree');
+   div.classList.add('NCT');
    return div;
 };
 
 NativeCheckBoxTree.createUlEle = function() {
    const ul = document.createElement('ul');
-   ul.classList.add('native-checkbox-tree-nodes');
+   ul.classList.add('NCT-nodes');
    return ul;
 };
 
 NativeCheckBoxTree.createLiEle = function(node, closed, chkBoxName) {
    const li = document.createElement('li');
-   li.classList.add('native-checkbox-tree-node');
-   if (closed) li.classList.add('native-checkbox-tree-node__close');
+   li.classList.add('NCT-node');
+   if (closed) li.classList.add('NCT-node__close');
    if (node.children && node.children.length) {
       const switcher = document.createElement('span');
-      switcher.classList.add('native-checkbox-tree-switcher');
+      switcher.classList.add('NCT-switcher');
       li.appendChild(switcher);
    } else {
-      li.classList.add('native-checkbox-tree-placeholder');
+      li.classList.add('NCT-placeholder');
    }
 
    const label = document.createElement('label');
-   label.classList.add('native-checkbox-tree-label');
+   label.classList.add('NCT-label');
    const checkbox = document.createElement('input');
    checkbox.type = 'checkbox';
    checkbox.dataset.id = node.id; // FIXME: < IE11
@@ -579,7 +579,7 @@ NativeCheckBoxTree.createLiEle = function(node, closed, chkBoxName) {
       }
       checkbox.value = node.id;
    }
-   checkbox.classList.add('native-checkbox-tree-checkbox');
+   checkbox.classList.add('NCT-checkbox');
    label.appendChild(checkbox);
    const text = document.createTextNode(node.text);
    label.appendChild(text);
